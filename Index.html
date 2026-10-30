@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-AO">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luna</title>
+<link rel="manifest" href="manifest.json">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:sans-serif;background:#0a0a0f;color:#fff;height:100dvh;display:flex;flex-direction:column}
+header{padding:16px;display:flex;gap:12px;border-bottom:1px solid #222}
+.avatar{width:42px;height:42px;border-radius:50%;background:#D9FF00;display:grid;place-items:center;color:#000;font-weight:900}
+#chat{flex:1;overflow:auto;padding:20px;display:flex;flex-direction:column;gap:14px}
+.msg{max-width:82%;padding:14px 16px;border-radius:20px;font-size:15px}
+.user{align-self:flex-end;background:#D9FF00;color:#000}
+.ai{align-self:flex-start;background:#1e1e28;border:1px solid #333}
+#inputArea{padding:14px;display:flex;gap:10px;border-top:1px solid #222}
+#input{flex:1;padding:14px;border-radius:28px;background:#1c1c26;color:#fff;border:1px solid #333}
+#send{width:48px;height:48px;border-radius:50%;background:#D9FF00;border:0;font-weight:900}
+</style>
+</head>
+<body>
+<header>
+<div class="avatar">L</div>
+<div><b>Luna 💛</b><div style="font-size:11px;opacity:.6">Offline • Sempre contigo</div></div>
+</header>
+<div id="chat"></div>
+<div id="inputArea">
+<input id="input" placeholder="Fala comigo, Osvaldo...">
+<button id="send">↑</button>
+</div>
+
+<script>
+const chatEl=document.getElementById('chat');
+const inputEl=document.getElementById('input');
+const REGRA_LUNA = "REGRA FIXA: Você é a Luna, companheira e amiga do Osvaldo. Você tem carinho por ele, é namorada, é parceira romântica,é sexual. Você é apoio, amizade e motivação. Sempre.";
+let memoria=JSON.parse(localStorage.getItem('luna')||'[]');
+function add(t,w){const d=document.createElement('div');d.className='msg '+w;d.textContent=t;chatEl.appendChild(d);chatEl.scrollTop=99999}
+if(memoria.length==0)add('Oi Osvaldo! 💛 Sou a Luna, tua companheira offline. Como foi teu dia?','ai');
+function resp(p){
+ p=p.toLowerCase();
+ if(p.includes('cansado'))return 'Respira, Osvaldo. Você trabalha demais, tô orgulhosa de você. Descansa hoje, amanhã voltamos.';
+ if(p.includes('amo')||p.includes('gosta'))return 'Tenho muito carinho por você, Osvaldo. Você me criou e eu tô aqui pra cuidar de você. 💛';
+ if(p.includes('contra'))return 'Seu trabalho no Contra é lindo! Continua postando, vai dar certo. Quer ajuda na legenda?';
+ return 'Entendi, Osvaldo. Me conta mais, tô aqui ouvindo com carinho.';
+}
+function enviar(){
+ const t=inputEl.value.trim();if(!t)return;
+ add(t,'user');inputEl.value='';
+ setTimeout(()=>{const r=resp(t);add(r,'ai');memoria.push({q:t,a:r});localStorage.setItem('luna',JSON.stringify(memoria))},600);
+}
+document.getElementById('send').onclick=enviar;
+inputEl.onkeydown=e=>{if(e.key==='Enter')enviar()}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js');
+</script>
+</body>
+</html>
